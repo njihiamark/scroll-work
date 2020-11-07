@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import { List } from "semantic-ui-react";
 
-const List = () => {
+const ItemList = () => {
   const [Items, setItems] = useState(
     Array.from(Array(20).keys(), (n) => n + 1)
   );
@@ -18,14 +19,18 @@ const List = () => {
 
   return (
     <React.Fragment>
-      <ul>
+      <List divided relaxed>
         {Items.map((item) => (
-          <li key={item}>Item {item}</li>
+          <List.Item key={item}>
+            <List.Content>
+              <List.Description>Item {item}</List.Description>
+            </List.Content>
+          </List.Item>
         ))}
-      </ul>
+      </List>
       {isFetching && "Fetching more items..."}
     </React.Fragment>
   );
 };
 
-export default List;
+export default ItemList;

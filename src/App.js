@@ -1,11 +1,13 @@
-import List from "./List";
+import ItemList from "./List";
+import "semantic-ui-css/semantic.min.css";
+import { Container } from "semantic-ui-react";
 import "./App.css";
 
 function App() {
   return (
-    <div>
-      <List />
-    </div>
+    <Container>
+      <ItemList />
+    </Container>
   );
 }
 
