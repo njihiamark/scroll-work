@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { List } from "semantic-ui-react";
 
 const ItemList = () => {
   const [Items, setItems] = useState(
-    Array.from(Array(20).keys(), (n) => n + 1)
+    Array.from(Array(30).keys(), (n) => n + 1)
   );
   const [isFetching, setIsFetching] = useState(false);
 
@@ -17,6 +17,31 @@ const ItemList = () => {
     }, 2000);
   }
 
+  /*function handleLoadMoreButton(e) {
+    e.target.blur();
+    setIsFetching(true);
+    loadMoreItems();
+  }*/
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    if (!isFetching) return;
+    loadMoreItems();
+  }, [isFetching]);
+
+  function handleScroll() {
+    if (
+      window.innerHeight + document.documentElement.scrollTop !==
+      document.documentElement.offsetHeight
+    ) {
+      setIsFetching(true);
+    }
+  }
+
   return (
     <React.Fragment>
       <List divided relaxed>
@@ -28,7 +53,7 @@ const ItemList = () => {
           </List.Item>
         ))}
       </List>
-      {isFetching && "Fetching more items..."}
+      {isFetching && <p>Fetching more items...</p>}
     </React.Fragment>
   );
 };
