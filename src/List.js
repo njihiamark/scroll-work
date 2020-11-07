@@ -1,13 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 
 const List = () => {
+  const [Items, seItems] = useState(Array.from(Array(20).keys(), (n) => n + 1));
   return (
     <React.Fragment>
       <ul>
-        <li>Item 1</li>
-        <li>Item 2</li>
-        <li>Item 3</li>
-        <li>Item 4</li>
+        {Items.map((item) => (
+          <li>Item {item}</li>
+        ))}
       </ul>
     </React.Fragment>
   );
