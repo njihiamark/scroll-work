@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import useInfiniteScroll from "./useInfiniteScroll";
 import { List } from "semantic-ui-react";
 
 const ItemList = () => {
   const [Items, setItems] = useState(
     Array.from(Array(30).keys(), (n) => n + 1)
   );
-  const [isFetching, setIsFetching] = useState(false);
+  const [isFetching, setIsFetching] = useInfiniteScroll(loadMoreItems);
 
   function loadMoreItems() {
     setTimeout(() => {
@@ -22,37 +23,6 @@ const ItemList = () => {
     setIsFetching(true);
     loadMoreItems();
   }*/
-
-  useEffect(() => {
-    window.addEventListener("scroll", debounce(handleScroll, 500));
-    return () =>
-      window.removeEventListener("scroll", debounce(handleScroll, 500));
-  }, []);
-
-  useEffect(() => {
-    if (!isFetching) return;
-    loadMoreItems();
-  }, [isFetching]);
-
-  const debounce = (func, delay) => {
-    let inDebounce;
-    return function () {
-      clearTimeout(inDebounce);
-      inDebounce = setTimeout(() => {
-        func.apply(this, arguments);
-      }, delay);
-    };
-  };
-
-  function handleScroll() {
-    if (
-      window.innerHeight + document.documentElement.scrollTop !==
-      document.documentElement.offsetHeight
-    ) {
-      setIsFetching(true);
-    }
-  }
-
   return (
     <React.Fragment>
       <List divided relaxed>
