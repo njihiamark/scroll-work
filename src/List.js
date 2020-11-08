@@ -24,14 +24,25 @@ const ItemList = () => {
   }*/
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", debounce(handleScroll, 500));
+    return () =>
+      window.removeEventListener("scroll", debounce(handleScroll, 500));
   }, []);
 
   useEffect(() => {
     if (!isFetching) return;
     loadMoreItems();
   }, [isFetching]);
+
+  const debounce = (func, delay) => {
+    let inDebounce;
+    return function () {
+      clearTimeout(inDebounce);
+      inDebounce = setTimeout(() => {
+        func.apply(this, arguments);
+      }, delay);
+    };
+  };
 
   function handleScroll() {
     if (
