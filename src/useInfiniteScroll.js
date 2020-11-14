@@ -1,40 +1,24 @@
-import { useState, useEffect } from "react";
+import { useState, useRef, useCallback } from "react";
 
 const useInfiniteScroll = (callback) => {
   const [isFetching, setIsFetching] = useState(false);
-  useEffect(() => {
-    window.addEventListener("scroll", debounce(handleScroll, 500));
-    return () =>
-      window.removeEventListener("scroll", debounce(handleScroll, 500));
-  }, []);
+  const observer = useRef();
 
-  useEffect(() => {
-    if (!isFetching) return;
-    callback(() => {
-      console.log("called back");
-    });
-  }, [isFetching]);
+  const lastElementRef = useCallback(
+    (node) => {
+      if (isFetching) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          callback();
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [isFetching, callback]
+  );
 
-  const debounce = (func, delay) => {
-    let inDebounce;
-    return function () {
-      clearTimeout(inDebounce);
-      inDebounce = setTimeout(() => {
-        func.apply(this, arguments);
-      }, delay);
-    };
-  };
-
-  function handleScroll() {
-    if (
-      window.innerHeight + document.documentElement.scrollTop !==
-      document.documentElement.offsetHeight
-    ) {
-      setIsFetching(true);
-    }
-  }
-
-  return [isFetching, setIsFetching];
+  return [isFetching, setIsFetching, lastElementRef];
 };
 
 export default useInfiniteScroll;

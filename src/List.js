@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import useInfiniteScroll from "./useInfiniteScroll";
-import { List } from "semantic-ui-react";
 
 const ItemList = () => {
   const [Items, setItems] = useState(
-    Array.from(Array(30).keys(), (n) => n + 1)
+    Array.from(Array(50).keys(), (n) => n + 1)
   );
-  const [isFetching, setIsFetching] = useInfiniteScroll(loadMoreItems);
+
+  const [isFetching, setIsFetching, lastElementRef] = useInfiniteScroll(
+    loadMoreItems
+  );
 
   function loadMoreItems() {
+    setIsFetching(true);
     setTimeout(() => {
       setItems((prevState) => [
         ...prevState,
@@ -25,15 +28,17 @@ const ItemList = () => {
   }*/
   return (
     <React.Fragment>
-      <List divided relaxed>
-        {Items.map((item) => (
-          <List.Item key={item}>
-            <List.Content>
-              <List.Description>Item {item}</List.Description>
-            </List.Content>
-          </List.Item>
-        ))}
-      </List>
+      {Items.map((item, index) => {
+        if (Items.length === index + 1) {
+          return (
+            <div ref={lastElementRef} key={index}>
+              Item {item} last
+            </div>
+          );
+        } else {
+          return <div key={index}>Item {item}</div>;
+        }
+      })}
       {isFetching && <p>Fetching more items...</p>}
     </React.Fragment>
   );
