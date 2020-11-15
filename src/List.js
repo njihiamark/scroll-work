@@ -1,24 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useInfiniteScroll from "./useInfiniteScroll";
+import axios from "axios";
 
 const ItemList = () => {
-  const [Items, setItems] = useState(
-    Array.from(Array(50).keys(), (n) => n + 1)
-  );
+  const [Items, setItems] = useState([]);
+  const [page, setPage] = useState(0);
+  const [HasMore, setHasMore] = useState(false);
 
   const [isFetching, setIsFetching, lastElementRef] = useInfiniteScroll(
-    loadMoreItems
+    HasMore ? loadMoreItems : () => {}
   );
+
+  useEffect(() => {
+    loadMoreItems();
+  }, []);
 
   function loadMoreItems() {
     setIsFetching(true);
-    setTimeout(() => {
-      setItems((prevState) => [
-        ...prevState,
-        ...Array.from(Array(20).keys(), (n) => n + prevState.length + 1),
-      ]);
-      setIsFetching(false);
-    }, 2000);
+    setPage((prevPageNumber) => prevPageNumber + 1);
+    axios({
+      method: "GET",
+      url: "https://jsonplaceholder.typicode.com/albums",
+      params: { _page: page, _limit: 40 },
+    })
+      .then((res) => {
+        setItems((prevTitles) => {
+          return [...new Set([...prevTitles, ...res.data.map((b) => b.title)])];
+        });
+        setHasMore(res.data.length > 0);
+        setIsFetching(false);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   }
 
   /*function handleLoadMoreButton(e) {
@@ -39,7 +53,7 @@ const ItemList = () => {
           return <div key={index}>Item {item}</div>;
         }
       })}
-      {isFetching && <p>Fetching more items...</p>}
+      {isFetching && <p>Fetching items...</p>}
     </React.Fragment>
   );
 };
